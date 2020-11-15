@@ -56,7 +56,7 @@ Clean data
 ######################################
 '''
 # Remove first (RespID) and second (weight) columns 
-data = data.drop(['RespId', 'weight'], axis=1)
+data = data.drop(['RespId', 'weight'], axis=1) # axis=1 dennotates column
 
 # Remove other columns where there are lots of missing data (NA)
 data = data.drop(['Q22','Q29_1', 'Q29_2','Q29_3','Q29_4','Q29_5','Q29_6','Q29_7','Q29_8','Q29_9','Q29_10','Q31','Q32','Q33'], axis=1)
@@ -522,7 +522,8 @@ print (pred)
 # let's evaluate the model using confusion matrix
 cm = confusion_matrix(y_test, y_pred)
 print(cm)
-#A      Predict
+#
+#A     Predicted
 #c  [[195  65  37]
 #t   [ 89 309 159]
 #u   [ 33 143 225]]
@@ -543,7 +544,7 @@ sns.heatmap(cm_df, annot=True, fmt='d', cmap='Blues') #annot=True to annotate ce
 diagonal_sum = cm.trace()
 sum_of_all_elements = cm.sum()
 accuracy = (diagonal_sum / sum_of_all_elements) *100;
-print('Model Accuracy is',accuracy)
+print('Model accuracy is',accuracy)
 
 
 
