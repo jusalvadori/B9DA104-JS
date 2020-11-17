@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Dublin Business Scholl
+Dublin Business School
 @author: Juliana Salvadori
 @Student_number: 10521647
 @Assigment: CA2 - Classification model
@@ -9,6 +9,7 @@ Dublin Business Scholl
 #pip install missingno
 
 import pandas as pd
+import math
 from matplotlib import pyplot
 import numpy as np
 from sklearn.feature_selection import SelectKBest
@@ -413,11 +414,15 @@ Feature Extraction with Univariate Statistical Tests
 (Chi-squared for classification)
 ######################################
 '''
+# chose the best K
+bestK = int(round(math.sqrt(dim[1]))) + 1
+print(bestK)
+
 array = data1.values
 X = array[:,0:56]
 Y = array[:,56]
 # feature extraction
-test = SelectKBest(score_func = chi2, k = 3)
+test = SelectKBest(score_func = chi2, k = bestK)
 fit = test.fit(X, Y)
 # summarize scores
 np.set_printoptions(precision=3)
@@ -425,11 +430,8 @@ print(fit.scores_)
 score = fit.scores_.tolist()
 
 col_names = list(data1)
-
-for i in col_names:
-    print(i)
-for i in score:
-    print(i)
+for a, b in zip(col_names, score):
+    print(a, b)    
     
 # let's use the top 5 features with the highest scores
 #	ppage	2930.821374
@@ -437,7 +439,6 @@ for i in score:
 #	Q27_3	221.3262291
 #	Q27_2	218.0110906
 #	Q27_6	217.2500834
-    
 #	Q27_1	213.9802858
 #	Q27_5	210.5921937
 #	Q25	205.4040102
@@ -503,7 +504,7 @@ y = data1[['voter_cat_int']]
 # split the dataset in test (25%) and train (75%)
 x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1)
 # apply KNN algorithm and looks for the 5 nearst neighbors using Euclidean distance
-knn_classifier = KNeighborsClassifier(n_neighbors=5, metric='euclidean')
+knn_classifier = KNeighborsClassifier(n_neighbors=bestK, metric='euclidean')
 knn_classifier.fit(x_train, y_train)
 # use the model to predict the voter category for test dataset
 y_pred = knn_classifier.predict(x_test)
@@ -524,9 +525,9 @@ cm = confusion_matrix(y_test, y_pred)
 print(cm)
 #
 #A     Predicted
-#c  [[195  65  37]
-#t   [ 89 309 159]
-#u   [ 33 143 225]]
+#c  [[196  71  30]
+#t   [ 57 325 175]
+#u   [ 32 142 227]]
 #a
 #l
 
