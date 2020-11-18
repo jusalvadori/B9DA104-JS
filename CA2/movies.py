@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Dublin Business Scholl
+Dublin Business School
 @author: Juliana Salvadori
 @Student_number: 10521647
 @Assigment: CA2 - Regression model
@@ -13,7 +13,7 @@ import matplotlib.pyplot as pyplot
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split  
 from sklearn.linear_model import LinearRegression  
-from sklearn.metrics import mean_squared_error, r2_Score
+from sklearn.metrics import mean_squared_error, r2_score
 
 '''
 Load data
@@ -129,7 +129,7 @@ print(correlations)
 
 
 '''
-Data normalization
+Rescaling data 
 ######################################
 '''
 x_feature = ['binary_int','domgross_2013$', 'intgross_2013$']
@@ -170,17 +170,21 @@ print('Train Score: ', model.score(x_train, y_train))  # 0.5141395306771033
 print('Test Score: ', model.score(x_test, y_test))     # 0.40797528086306056
 
 
-# Note that for rmse, the lower that value is, the better the fit
+# Note that for RSME, the lower that value is, the better the fit
+# The ideal MSE isn't 0, since then you would have a model that 
+# perfectly predicts your training data, but which is very unlikely 
+# to perfectly predict any other data. What you want is a balance 
+# between overfit (very low MSE for training data) and 
+# underfit (very high MSE for test/validation/unseen data)
 test_set_rmse = (np.sqrt(mean_squared_error(y_test, y_pred)))
-# The closer towards 1, the better the fit
+# R2: the closer towards 1, the better the fit
 test_set_r2   = r2_score(y_test, y_pred)
 
-print('RSME:',test_set_rmse)
-print('R2:',test_set_r2)
+print('Mean squared error:',test_set_rmse)
+print('Variance score:',test_set_r2)
 
 # RSME: 41063032.86551617
 # R2: 0.40797528086306045
-
 
 ######################################
 # Density plot of test Actual data and test Predict data
@@ -194,6 +198,57 @@ compare['Predicted'].plot(kind='density')
 pyplot.legend()
 fig.show()
 
+'''
+KFolds cross-validation to evaluate the model
+######################################
+'''
+from sklearn.model_selection import KFold
+from sklearn.neural_network import MLPRegressor 
+from sklearn.metrics import mean_absolute_error
 
-
-
+kf = KFold (n_splits=20)
+list_training_error = []
+list_testing_error = []
+for train_idx, test_idx in kf.split(x):
+    # 
+    x_trainr, x_testr = x[train_idx], x[test_idx]
+    y_trainr, y_testr = y[train_idx], y[test_idx]
+    
+    x_train = np.array(x_trainr[x_feature]).reshape(-1,1)
+    y_train = np.array(y_trainr[y_target]).reshape(-1,1)
+    x_test = np.array(x_testr[x_feature]).reshape(-1,1)
+    y_test = np.array(y_testr[y_target]).reshape(-1,1)    
+    
+    # fit the model
+    model = MLPRegressor()
+    model.fit(x_train, y_train)
+    
+    # prediction
+    y_train_pred = model.predict(x_train)
+    y_test_pred  = model.predict(x_test)
+    
+    # estimate the errors for test and training sets
+    fold_training_error = mean_absolute_error(y_train, y_train_pred) 
+    fold_testing_error = mean_absolute_error(y_test, y_test_pred)
+    
+    list_training_error.append(fold_training_error)
+    list_testing_error.append(fold_testing_error)
+    
+print(type(y_train_pred))    
+    
+    
+pyplot.style.use('ggplot')    
+pyplot.figure( figsize=(15,10))
+pyplot.subplot(1,2,1)
+pyplot.plot(range(1, kf.get_n_splits() + 1), np.array(list_training_error).ravel(), 'o-')
+pyplot.xlabel('number of fold')
+pyplot.ylabel('training error')
+pyplot.title('Training error across folds')
+pyplot.tight_layout()
+pyplot.subplot(1,2,2)
+pyplot.plot(range(1, kf.get_n_splits() + 1), np.array(list_testing_error).ravel(), 'o-')
+pyplot.xlabel('number of fold')
+pyplot.ylabel('testing error')
+pyplot.title('Testing error across folds')
+pyplot.tight_layout()
+pyplot.show()

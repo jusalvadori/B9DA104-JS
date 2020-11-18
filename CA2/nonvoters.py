@@ -327,7 +327,7 @@ print(description)
 # which columns have min as -1?
 ## extract min row as series
 row = description.iloc[3]           
-## filter for values equal to -11 and get columns via index
+## filter for values equal to -1 and get columns via index
 invalidMin = row[row == -1].index  
 print(invalidMin)
 
@@ -375,7 +375,7 @@ other increases. The diagonals are all 1/dark collor because those squares are
 correlating each variable to itself (so it's a perfect correlation).
 '''
 correlations = data1.corr()
-print(correlations)
+#print(correlations)
 
 col_names = list(data1)
 # plot correlation matrix
@@ -406,8 +406,8 @@ Data normalization
 dim = data1.shape
 print(dim)
 # let's have a look at data
-view = data1.head(10)
-print(view)
+#view = data1.head(10)
+#print(view)
 
 '''
 Feature Extraction with Univariate Statistical Tests 
